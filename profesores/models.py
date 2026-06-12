@@ -32,5 +32,5 @@ class Profesor(models.Model):
         verbose_name = "Profesor"
         verbose_name_plural = "Profesores"
 
-def __str__(self):
-    return f"{self.usuario.first_name} {self.usuario.last_name}"
+    def __str__(self):
+        return f"{self.usuario.first_name} {self.usuario.last_name}"
