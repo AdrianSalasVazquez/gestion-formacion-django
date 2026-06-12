@@ -129,22 +129,33 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-#Configuración del login
+
+#Configuración del login y logout
+
+#Modelo que usa para autenticar usuarios
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
+#Enlaces donde redirigen despues del login y logout
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+#Sitios donde almacenamos la información multimedia
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 #CONFIGURACIÓN JAZZMIN
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "Administración",
+    "site_title": "Gestión Formación",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "Administración",
+    "site_header": "Gestión Formación",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "Administración",
+    "site_brand": "Academia",
+    
+    
+    "welcome_sign": "Bienvenido al panel",
 
     # CSS classes that are applied to the logo above
     "site_logo_classes": "img-circle",
