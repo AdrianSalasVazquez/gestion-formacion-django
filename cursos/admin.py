@@ -5,7 +5,7 @@ from datetime import timedelta
 from django.utils import timezone
 
 class FiltroFechas(admin.SimpleListFilter):
-    title = "Filtro temporal"
+    title = "Fecha inicio"
     parameter_name = "periodo"
 
     def lookups(self, request, model_admin):
