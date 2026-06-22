@@ -74,12 +74,18 @@ class CursoAdmin(admin.ModelAdmin):
     ordering = (
         'nombre',
     )
+    prepopulated_fields = {
+        'slug': (
+            'nombre',
+        )
+    }
     fieldsets = (
         (
             'Información General',
             {
                 'fields': (
                     'nombre',
+                    'slug',
                     'descripcion',
                     'profesor',
                 )

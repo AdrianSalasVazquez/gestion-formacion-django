@@ -8,7 +8,7 @@ urlpatterns = [
         name='lista_cursos'
     ),
     path(
-        '<int:curso_id>/',
+        '<slug:slug>/',
         views.detalle_curso,
         name='detalle_curso'
     ),
