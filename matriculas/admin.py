@@ -16,3 +16,13 @@ class MatriculaAdmin(admin.ModelAdmin):
     ordering = (
         '-fecha_matricula',
     )
+    list_filter = (
+        'curso',
+        'fecha_matricula',
+    )
+    date_hierarchy = (
+        'fecha_matricula'
+    )
+    readonly_fields = (
+        'fecha_matricula',
+    )

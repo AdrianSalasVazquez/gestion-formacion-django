@@ -1,24 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-    <div class="p-5 mb-4 bg-light rounded-3">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">
-                Plataforma de Gestión de Formación
-            </h1>
-            <p class="fs-4">
-                Sistema desarrollado con Django,
-                PostgreSQL y Bootstrap.
-            </p>
-            {% if user.is_authenticated %}
-                <div class="alert alert-success">
-                    Bienvenido
+<div class="p-5 mb-4 bg-light rounded-3">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">
+            Plataforma de Gestión de Formación
+        </h1>
+        <p class="fs-4">
+            Sistema desarrollado con Django,
+            PostgreSQL y Bootstrap.
+        </p>
+        {% if user.is_authenticated %}
+            <div class="alert alert-success">
+                Bienvenido
+                <strong>
                     {{ user.first_name }}
-                </div>
-            {% else %}
+                    {{ user.last_name }}
+                </strong>
+            </div>
+        {% else %}
             <a href="{% url 'registro' %}" class="btn btn-primary btn-lg">
                 Registrarse
             </a>
-            {% endif %}
-        </div>
+        {% endif %}
     </div>
+</div>
 {% endblock %}

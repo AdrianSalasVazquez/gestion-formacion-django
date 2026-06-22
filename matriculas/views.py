@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from cursos.models import Curso
 from .models import Matricula
+from django.db.models import Count
 
 
 # Create your views here.
@@ -32,8 +33,50 @@ def matricularse(request, curso_id):
 
 
 @login_required
+def cancelar_matricula(request, matricula_id):
+    matricula = get_object_or_404(Matricula, pk=matricula_id, alumno=request.user)
+    matricula.delete()
+    messages.success(request, "Matrícula cancelada.")
+    return redirect("mis_cursos")
+
+
+@login_required
 def mis_cursos(request):
 
     matriculas = Matricula.objects.filter(alumno=request.user).select_related("curso")
 
     return render(request, "matriculas/mis_cursos.html", {"matriculas": matriculas})
+
+
+@login_required
+def dashboard(request):
+    total_matriculas = Matricula.objects.filter(alumno=request.user).count()
+    ultima_matricula = (
+        Matricula.objects.filter(alumno=request.user)
+        .select_related("curso")
+        .order_by("-fecha_matricula")
+        .first()
+    )
+    proximo_curso = (
+        Curso.objects.filter(matriculas__alumno=request.user)
+        .order_by("fecha_inicio")
+        .first()
+    )
+    ultimas_matriculas = (
+        Matricula.objects.filter(alumno=request.user)
+        .select_related("curso")
+        .order_by("-fecha_matricula")[:5]
+    )
+    cursos_disponibles = Curso.objects.filter(activo=True).count()
+
+    return render(
+        request,
+        "matriculas/dashboard.html",
+        {
+            "total_matriculas": total_matriculas,
+            "ultima_matricula": ultima_matricula,
+            "proximo_curso": proximo_curso,
+            "ultimas_matriculas": ultimas_matriculas,
+            'cursos_disponibles':cursos_disponibles
+        },
+    )
