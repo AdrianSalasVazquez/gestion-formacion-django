@@ -26,10 +26,15 @@ def detalle_curso(request,curso_id):
         activo=True
     )
 
+    ocupadas = (
+        curso.matriculas.count()
+    )
+
     return render(
         request,
         'cursos/detalle_curso.html',
         {
-            'curso': curso
+            'curso': curso,
+            'ocupadas': ocupadas
         }
     )

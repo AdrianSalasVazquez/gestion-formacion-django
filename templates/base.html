@@ -38,27 +38,39 @@
                 </ul>
                 <div>
                     {% if user.is_authenticated %}
-                    <span class="text-white me-3">
-                        {{ user.username }}
-                    </span>
-                    <form method="post" action="{% url 'logout' %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">
-                            Salir
-                        </button>
-                    </form>
+                        <span class="text-white me-3">
+                            {{ user.username }}
+                        </span>
+                        <a href="{% url 'mis_cursos' %}" class="btn btn-warning me-2">
+                            Mis Cursos
+                        </a>
+                        <form method="post" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                Salir
+                            </button>
+                        </form>
                     {% else %}
-                    <a href="{% url 'registro' %}" class="btn btn-success me-2">
-                        Registro
-                    </a>
-                    <a href="{% url 'login' %}" class="btn btn-primary">
-                        Login
-                    </a>
+                        <a href="{% url 'registro' %}" class="btn btn-success me-2">
+                            Registro
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-primary">
+                            Login
+                        </a>
                     {% endif %}
                 </div>
             </div>
         </div>
     </nav>
+    <div class="container mt-3">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
     <div class="container mt-4">
         {% block content %}
         {% endblock %}
