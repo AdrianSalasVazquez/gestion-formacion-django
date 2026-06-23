@@ -3,6 +3,8 @@ from .models import Curso
 from django.utils.html import format_html
 from datetime import timedelta
 from django.utils import timezone
+from django.db.models import Count
+
 
 class FiltroFechas(admin.SimpleListFilter):
     title = "Fecha inicio"
@@ -48,76 +50,70 @@ class FiltroFechas(admin.SimpleListFilter):
 
         return queryset
 
+
 # Register your models here.
 @admin.register(Curso)
 class CursoAdmin(admin.ModelAdmin):
+    def alumnos(self, obj):
+        return obj.matriculas.count()
+    alumnos.short_description = "Alumnos"
+    
     list_display = (
-        'miniatura',
         'nombre',
         'profesor',
-        'fecha_inicio',
-        'fecha_fin',
-        'plazas',
+        'alumnos',
         'activo',
     )
     search_fields = (
-        'nombre',
-        'descripcion',
-        'profesor__usuario__first_name',
-        'profesor__usuario__last_name',
+        "nombre",
+        "descripcion",
+        "profesor__usuario__first_name",
+        "profesor__usuario__last_name",
     )
     list_filter = (
-        'activo',
-        'plazas',
+        "activo",
+        "plazas",
         FiltroFechas,
     )
-    ordering = (
-        'nombre',
-    )
-    prepopulated_fields = {
-        'slug': (
-            'nombre',
-        )
-    }
+    ordering = ("nombre",)
+    prepopulated_fields = {"slug": ("nombre",)}
+    list_editable = ("activo",)
     fieldsets = (
         (
-            'Información General',
+            "Información General",
             {
-                'fields': (
-                    'nombre',
-                    'slug',
-                    'descripcion',
-                    'profesor',
+                "fields": (
+                    "nombre",
+                    "slug",
+                    "descripcion",
+                    "profesor",
                 )
-            }
+            },
         ),
         (
-            'Planificación',
+            "Planificación",
             {
-                'fields': (
-                    'fecha_inicio',
-                    'fecha_fin',
-                    'plazas',
+                "fields": (
+                    "fecha_inicio",
+                    "fecha_fin",
+                    "plazas",
                 )
-            }
+            },
         ),
         (
-            'Publicación',
+            "Publicación",
             {
-                'fields': (
-                    'activo',
-                    'imagen',
+                "fields": (
+                    "activo",
+                    "imagen",
                 )
-            }
+            },
         ),
     )
 
     def miniatura(self, obj):
         if obj.imagen:
-            return format_html(
-                '<img src="{}" width="80"/>',
-                obj.imagen.url
-            )
-        return '-'
-    
+            return format_html('<img src="{}" width="80"/>', obj.imagen.url)
+        return "-"
+
     miniatura.short_description = "Imagen"

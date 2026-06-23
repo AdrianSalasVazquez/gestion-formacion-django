@@ -50,7 +50,12 @@
                             </a>
                         {% endif %}
                         {% if user.tipo == 'profesor' %}
-                            
+                            <a href="{% url 'dashboard_profesor' %}" class="btn btn-info me-2">
+                                Panel Profesor
+                            </a>
+                            <a href="{% url 'mis_cursos_profesor' %}" class="btn btn-secondary me-2">
+                                Mis Cursos
+                            </a>
                         {% endif %}
                         <form method="post" action="{% url 'logout' %}" class="d-inline">
                             {% csrf_token %}
