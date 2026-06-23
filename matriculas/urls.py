@@ -13,7 +13,7 @@ urlpatterns = [
     ),
     path(
         "dashboard/",
-        views.dashboard,
+        views.DashboardAlumnoView.as_view(),
         name="dashboard"
     ),
     path(

@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from cursos.models import Curso
 from .models import Matricula
-from django.db.models import Count
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
 
 
 # Create your views here.
@@ -48,35 +49,13 @@ def mis_cursos(request):
     return render(request, "matriculas/mis_cursos.html", {"matriculas": matriculas})
 
 
-@login_required
-def dashboard(request):
-    total_matriculas = Matricula.objects.filter(alumno=request.user).count()
-    ultima_matricula = (
-        Matricula.objects.filter(alumno=request.user)
-        .select_related("curso")
-        .order_by("-fecha_matricula")
-        .first()
-    )
-    proximo_curso = (
-        Curso.objects.filter(matriculas__alumno=request.user)
-        .order_by("fecha_inicio")
-        .first()
-    )
-    ultimas_matriculas = (
-        Matricula.objects.filter(alumno=request.user)
-        .select_related("curso")
-        .order_by("-fecha_matricula")[:5]
-    )
-    cursos_disponibles = Curso.objects.filter(activo=True).count()
+class DashboardAlumnoView(LoginRequiredMixin, TemplateView):
 
-    return render(
-        request,
-        "matriculas/dashboard.html",
-        {
-            "total_matriculas": total_matriculas,
-            "ultima_matricula": ultima_matricula,
-            "proximo_curso": proximo_curso,
-            "ultimas_matriculas": ultimas_matriculas,
-            'cursos_disponibles':cursos_disponibles
-        },
-    )
+    template_name = "matriculas/dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["total_matriculas"] = Matricula.objects.filter(
+            alumno=self.request.user
+        ).count()
+        return context

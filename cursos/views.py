@@ -1,53 +1,59 @@
-from django.shortcuts import render, get_object_or_404
-from django.db.models import Q
 from .models import Curso
-from profesores.models import Profesor
-from django.core.paginator import Paginator
+from .forms import CursoForm
+from django.db.models import Q
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
+
 
 # Create your views here.
-def lista_cursos(request):
+class ProfesorMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.tipo == "profesor"
 
-    cursos = Curso.objects.filter(activo=True).select_related(
-        'profesor',
-        'profesor__usuario'
-    ).order_by("fecha_inicio")
+class ListaCursosView(ListView):
+    model = Curso
+    template_name = "cursos/lista_cursos.html"
+    context_object_name = "cursos"
+    paginate_by = 6
 
-    profesores = Profesor.objects.all()
-
-    #Barra de buscador
-    busqueda = request.GET.get("buscar", "")
-    if busqueda:
-        cursos = cursos.filter(
-            Q(nombre__icontains=busqueda) | Q(descripcion__icontains=busqueda)
-        )
-
-    #Filtro de profesores
-    profesor_id = request.GET.get('profesor')
-    if profesor_id:
-        cursos = cursos.filter(profesor_id=profesor_id)
-    
-    #Paginación
-    paginator = Paginator(cursos,6)
-    page_number = request.GET.get('page')
-    cursos = paginator.get_page(page_number)
-
-    return render(
-        request,
-        "cursos/lista_cursos.html",
-        {
-            "cursos": cursos,
-            'profesores': profesores,
-            "total_cursos": paginator.count
-        },
-    )
+    def get_queryset(self):
+        queryset = Curso.objects.filter(activo=True)
+        buscar = self.request.GET.get("buscar")
+        if buscar:
+            queryset = queryset.filter(
+                Q(nombre__icontains=buscar) | Q(descripcion__icontains=buscar)
+            )
+        return queryset
 
 
-def detalle_curso(request, slug):
+class CursoDetailView(DetailView):
+    model = Curso
+    template_name = "cursos/detalle_curso.html"
+    context_object_name = "curso"
+    slug_field = "slug"
+    slug_url_kwarg = "slug"
 
-    curso = get_object_or_404(Curso, slug=slug, activo=True)
 
-    ocupadas = curso.matriculas.count()
+class CursoCreateView(LoginRequiredMixin,ProfesorMixin,CreateView):
+    form_class = CursoForm
+    template_name = "cursos/curso_form.html"
+    success_url = reverse_lazy("lista_cursos")
 
-    return render(
-        request, "cursos/detalle_curso.html", {"curso": curso, "ocupadas": ocupadas}
-    )
+
+class CursoUpdateView(LoginRequiredMixin,ProfesorMixin,UpdateView):
+    form_class = CursoForm
+    template_name = "cursos/curso_form.html"
+    success_url = reverse_lazy("lista_cursos")
+
+
+class CursoDeleteView(LoginRequiredMixin,ProfesorMixin,DeleteView):
+    model = Curso
+    template_name = "cursos/curso_confirm_delete.html"
+    success_url = reverse_lazy("lista_cursos")
